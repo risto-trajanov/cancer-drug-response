@@ -1,0 +1,12 @@
+pandas
+numpy
+sqlalchemy
+lxml
+apache-airflow[s3]>=1.10
+requests
+botocore>=1.12
+boto3>=1.9
+pymongo
+dnspython
+flask
+flask_restful
