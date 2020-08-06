@@ -1,6 +1,7 @@
-# Photovoltaic System Modeling and Predictions for Data Mining 2020 FCSE
+# Cancer Drug Response
 
 ## Getting started with airflow
+### Get the data ready
 ```
 cd airflow
 docker-compose up -d
