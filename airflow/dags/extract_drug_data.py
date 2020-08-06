@@ -12,8 +12,20 @@ folders = ['CCLE Cell Line Gene CNV Profiles', 'CCLE Cell Line Gene Expression P
 matrix_zip = 'gene_attribute_matrix.txt.gz'
 matrix_txt = 'gene_attribute_matrix.txt'
 numpy_array_name = 'gene_attribute_numpy_array.npy'
+cell_lines_numpy = 'cell_lines.npy'
 mongo_database = "cancer_drug_response"
 mongo_collection = "cell_line_drug_response"
+
+
+def save_patient_folders_s3():
+    for j in range(1, 7):
+        folder = "Patient_" + str(j)
+        patient_data = os.listdir(folder)
+        for data in patient_data:
+            file = os.path.join(folder, data)
+            print("Uploading " + file + " \n...")
+            utils.upload_s3(file)
+            print("Uploaded " + file)
 
 
 class CellData:
@@ -25,7 +37,7 @@ class CellData:
         download_file_s3_name = utils.download_s3(cell_data_file_name_zip)
         cell_data = self._decompress(download_file_s3_name, cell_data_file_name_zip)
         numpy_array = self.cell_lines_with_drug_data(cell_data, drug_data)
-        self.save_numpy_array_s3(numpy_array)
+        self.save_numpy_array_s3(numpy_array, numpy_array_name)
 
     def _decompress(self, filename, s3_path):
         txt_file = s3_path.rsplit(".", 1)[0]
@@ -52,17 +64,33 @@ class CellData:
         cell_lines_without_data = [w for w in cells if w not in cells_from_drug_data]
         cell_lines_without_data = list(cell_lines_without_data)
         cell_with_drug_data = cell_data.loc[:, ~cell_data.columns.isin(cell_lines_without_data)]
+        cell_lines_without = cell_data.loc[:, cell_data.columns.isin(cell_lines_without_data)]
+        self.cell_line_test_data(cell_lines_without)
 
         cell_with_drug_data = cell_with_drug_data.set_index("#")
 
         cell_with_drug_data_cleaned = cell_with_drug_data.iloc[2:, 2:]
         cell_with_drug_data_cleaned_t = cell_with_drug_data_cleaned.T
+        cell_with_drug_data_cleaned_t_cells = cell_with_drug_data_cleaned_t.index
+        cell_with_drug_data_cleaned_t_cells_numpy = cell_with_drug_data_cleaned_t_cells.to_numpy()
+        self.save_numpy_array_s3(cell_with_drug_data_cleaned_t_cells_numpy, cell_lines_numpy)
         cell_with_drug_data_cleaned_t_numpy = cell_with_drug_data_cleaned_t.to_numpy()
 
         return cell_with_drug_data_cleaned_t_numpy
 
-    def save_numpy_array_s3(self, numpy_array):
-        filename = os.path.join(self.folder, numpy_array_name)
+    def cell_line_test_data(self, cell_lines_without):
+        j = 1
+        for i in range(3, 10):
+            patient_folder = "Patient_" + str(j)
+            j += 1
+            if not os.path.exists(patient_folder):
+                os.mkdir(patient_folder)
+            patient_data = cell_lines_without.iloc[2:, i]
+            filename = "gene_" + self.feature + ".csv"
+            patient_data.to_csv(os.path.join(patient_folder, filename))
+
+    def save_numpy_array_s3(self, numpy_array, numpy_name):
+        filename = os.path.join(self.folder, numpy_name)
         if os.path.exists(filename):
             print("Exists")
         else:
@@ -139,6 +167,7 @@ def main():
     for folder in folders:
         cell_data_s3_name_zip = os.path.join(folder, matrix_zip)
         CellData(cell_data_s3_name_zip, folder, clean_drug_data)
+    #save_patient_folders_s3()
 
 
 if __name__ == '__main__':

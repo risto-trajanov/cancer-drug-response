@@ -19,6 +19,7 @@ from utils import upload_s3
 
 
 def _S3(txt_file):
+    print("Starting Upload")
     upload_s3(txt_file)
     print("Uploaded " + txt_file)
 

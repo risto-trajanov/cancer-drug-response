@@ -1,0 +1,11 @@
+pandas
+numpy
+fastapi
+uvicorn
+python-multipart
+requests
+botocore>=1.12
+boto3>=1.9
+pymongo
+dnspython
+sklearn
