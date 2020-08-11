@@ -5,10 +5,6 @@ from airflow.contrib.hooks.mongo_hook import MongoHook
 from airflow.hooks.S3_hook import S3Hook
 
 S3_BUCKET_NAME = 'cancerdrugresponse'
-aws_access_key_id = "AKIAJR6DOH7PB4S3RFLA"
-aws_secret_access_key = "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"
-
-
 
 
 def download_s3(file):

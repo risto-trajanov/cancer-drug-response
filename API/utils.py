@@ -8,10 +8,6 @@ from airflow.hooks.S3_hook import S3Hook
 S3_BUCKET_NAME = 'cancerdrugresponse'
 
 
-# aws_access_key_id = "AKIAJR6DOH7PB4S3RFLA"
-# aws_secret_access_key = "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"
-
-
 def download_s3(file):
     s3 = S3Hook(aws_conn_id='my_conn_S3')
     with tempfile.NamedTemporaryFile(delete=False) as tmp:
