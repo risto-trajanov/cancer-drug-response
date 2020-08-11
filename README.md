@@ -19,7 +19,9 @@ Place python requirements at `airflow\requirements.txt` and then restart the con
 ### Install 
 
 Requirements from `requirements.txt`
+
 Run `main.py`
+
 Go to `localhost:8000`
 
 ### Data Input
