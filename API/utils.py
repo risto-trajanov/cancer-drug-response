@@ -1,12 +1,15 @@
 import tempfile
 import pymongo
 import boto3
+import re
 from airflow.contrib.hooks.mongo_hook import MongoHook
 from airflow.hooks.S3_hook import S3Hook
 
 S3_BUCKET_NAME = 'cancerdrugresponse'
-aws_access_key_id = "AKIAJR6DOH7PB4S3RFLA"
-aws_secret_access_key = "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"
+
+
+# aws_access_key_id = "AKIAJR6DOH7PB4S3RFLA"
+# aws_secret_access_key = "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"
 
 
 def download_s3(file):
@@ -47,11 +50,13 @@ def donwload_mongo(database, collection):
 
 
 def upload_s3_local(file):
-    s3_resources = boto3.resource('s3')
-    bucket = s3_resources.Bucket(name=S3_BUCKET_NAME)
-    bucket.load_file(Filename=file, Key=file, replace=True)
+    s3 = boto3.client('s3')
+    with open(file, 'rb') as f:
+        s3.upload_fileobj(f, S3_BUCKET_NAME, file)
 
 
 def download_s3_local(file):
-    s3_resources = boto3.resource('s3')
-    s3_resources.Object(S3_BUCKET_NAME, file).download_file(file)
+    s3 = boto3.client('s3')
+    file = re.sub(r'\\+', '/', file)
+    with open(file, 'wb') as f:
+        s3.download_fileobj(S3_BUCKET_NAME, file, f)

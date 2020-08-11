@@ -67,5 +67,4 @@ drug_data_task = PythonOperator(
     dag=dag
 )
 
-#download_task >> \
-drug_data_task
+download_task >> drug_data_task

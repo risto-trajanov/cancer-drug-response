@@ -2,6 +2,8 @@ from typing import Optional, List
 from fastapi import FastAPI, File, UploadFile
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+import API.prediciton as prediction
+import uvicorn
 
 app = FastAPI()
 
@@ -30,6 +32,10 @@ async def create_upload_file(file: UploadFile = File(...)):
 
 @app.post("/uploadfiles/")
 async def create_upload_files(files: List[UploadFile] = File(...)):
-    return {"filenames": [file.filename for file in files]}
+    result = prediction.main(files, 15)
+    print(result)
+    return {"result": result}
 
 
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

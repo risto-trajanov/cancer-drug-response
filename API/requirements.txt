@@ -1,5 +1,5 @@
 pandas
-numpy
+numpy==1.16.2
 fastapi
 uvicorn
 python-multipart
